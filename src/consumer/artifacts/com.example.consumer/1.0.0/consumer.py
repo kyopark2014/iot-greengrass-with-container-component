@@ -2,6 +2,7 @@ import sys
 import traceback
 import time
 import json
+import os
 import pandas as pd
 from awsiot.greengrasscoreipc.clientv2 import GreengrassCoreIPCClientV2
 from awsiot.greengrasscoreipc.model import (
