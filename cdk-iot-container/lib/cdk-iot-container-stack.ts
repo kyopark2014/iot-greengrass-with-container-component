@@ -86,7 +86,7 @@ export class CdkIotContainerStack extends cdk.Stack {
           componentVersion: "2.8.1", 
         }
       },
-      deploymentName: 'ml-deployment',
+      deploymentName: 'component-deployment',
       deploymentPolicies: {
         componentUpdatePolicy: {
           action: 'NOTIFY_COMPONENTS', // NOTIFY_COMPONENTS | SKIP_NOTIFY_COMPONENTS
