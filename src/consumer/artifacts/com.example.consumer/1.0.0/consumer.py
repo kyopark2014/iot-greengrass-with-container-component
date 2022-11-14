@@ -9,8 +9,8 @@ from awsiot.greengrasscoreipc.model import (
     BinaryMessage
 )
 
-def load_event():
-    json_file = pd.read_json('samples.json')
+def load_event(BASE_DIR):
+    json_file = pd.read_json(BASE_DIR+'/samples.json')
 
     json_data = json_file.to_json(orient='records')
 
@@ -24,9 +24,11 @@ def load_event():
 
 def main():
     topic = 'local/topic'
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
+    print('BASE_DIR = ', BASE_DIR)
 
     # load samples
-    message = load_event()
+    message = load_event(BASE_DIR)
 
     try:
         ipc_client = GreengrassCoreIPCClientV2()

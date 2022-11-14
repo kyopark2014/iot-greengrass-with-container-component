@@ -8,7 +8,7 @@ from awsiot.greengrasscoreipc.model import (
     UnauthorizedError
 )
 
-def main():
+def handler():
     topic = 'local/topic'
 
     try:
@@ -53,6 +53,5 @@ def on_stream_error(error: Exception) -> bool:
 def on_stream_closed() -> None:
     print('Subscribe to topic stream closed.')
 
-if __name__ == '__main__':
-    main()
+
 	
