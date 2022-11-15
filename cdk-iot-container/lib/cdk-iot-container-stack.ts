@@ -42,20 +42,20 @@ export class CdkIotContainerStack extends cdk.Stack {
     });
 
     // create container component - com.example.container
-    new containerComponent(scope, "container-component")   
+    const version_container = "1.0.3"
+    new containerComponent(scope, "container-component", version_container)   
 
     // create local component
-    new localComponent(scope, "local-component", s3Bucket.bucketName)   
+    const version_consumer = "1.0.2"
+    new localComponent(scope, "local-component", version_consumer, s3Bucket.bucketName)   
 
     // deploy components - com.example.consumer
-    new componentDeployment(scope, "deployments", accountId, deviceName)   
-
-
+    new componentDeployment(scope, "deployments", version_consumer, version_container, accountId, deviceName)   
   }
 }
 
 export class containerComponent extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {    
+  constructor(scope: Construct, id: string, version: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
     const asset = new DockerImageAsset(this, 'BuildImage', {
@@ -69,7 +69,6 @@ export class containerComponent extends cdk.Stack {
     }); 
 
     // recipe of component - com.example.container
-    const version = "1.0.0"
     const recipe = `{
       "RecipeFormatVersion": "2020-01-25",
       "ComponentName": "com.example.container",
@@ -125,16 +124,15 @@ export class containerComponent extends cdk.Stack {
 }
 
 export class localComponent extends cdk.Stack {
-  constructor(scope: Construct, id: string, bucketName: string, props?: cdk.StackProps) {    
+  constructor(scope: Construct, id: string, version: string, bucketName: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
     // recipe of component - com.example.consumer
-    const version = "1.0.0"
     const recipe_consumer = `{
       "RecipeFormatVersion": "2020-01-25",
       "ComponentName": "com.example.consumer",
       "ComponentVersion": "${version}",
-      "ComponentDescription": "A component that use the API.",
+      "ComponentDescription": "A component that consume the API.",
       "ComponentPublisher": "Amazon",
       "ComponentConfiguration": {
         "DefaultConfiguration": {
@@ -158,12 +156,17 @@ export class localComponent extends cdk.Stack {
           "os": "linux"
         },
         "Lifecycle": {
-          "Install": "pip3 install awsiotsdk",
+          "Install": "pip3 install awsiotsdk pandas",
           "Run": "python3 -u {artifacts:path}/consumer.py"
         },
-        "Artifacts": [{
-          "URI": "${'s3://'+bucketName}/consumer/artifacts/com.example.consumer/${version}/consumer.py"
-        }]
+        "Artifacts": [
+          {
+            "URI": "${'s3://'+bucketName}/consumer/artifacts/com.example.consumer/1.0.0/consumer.py"
+          },
+          {
+            "URI": "${'s3://'+bucketName}/consumer/artifacts/com.example.consumer/1.0.0/samples.json"
+          }
+        ]
       }]
     }`
 
@@ -175,7 +178,7 @@ export class localComponent extends cdk.Stack {
 }
 
 export class componentDeployment extends cdk.Stack {
-  constructor(scope: Construct, id: string, accountId: string, deviceName: string, props?: cdk.StackProps) {    
+  constructor(scope: Construct, id: string, version_consumer: string, version_container: string, accountId: string, deviceName: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
     // deployments
@@ -183,11 +186,11 @@ export class componentDeployment extends cdk.Stack {
       targetArn: `arn:aws:iot:ap-northeast-2:`+accountId+`:thing/`+deviceName,    
       components: {
         "com.example.consumer": {
-          componentVersion: "1.0.0", 
+          componentVersion: version_consumer, 
         },
         "com.example.container": {
-          componentVersion: "1.0.0", 
-        },
+          componentVersion: version_container, 
+        },  
         "aws.greengrass.Cli": {
           componentVersion: "2.8.1", 
         }

@@ -12,4 +12,4 @@ COPY . .
 
 RUN pip install -r requirements.txt
 
-CMD ["main.handler"]
+CMD ["inference.handler"]
