@@ -28,7 +28,9 @@ def handler(event, context):
 
         # Keep the main thread alive, or the process will exit.
         try:
+            num = 1
             while True:
+                print('Subscribe: ', num+1)
                 time.sleep(10)
         except InterruptedError:
             print('Subscribe interrupted.')
