@@ -62,5 +62,4 @@ def on_stream_error(error: Exception) -> bool:
 def on_stream_closed() -> None:
     print('Subscribe to topic stream closed.')
 
-
-	
+handler()	
