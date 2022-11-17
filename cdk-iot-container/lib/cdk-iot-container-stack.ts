@@ -42,14 +42,14 @@ export class CdkIotContainerStack extends cdk.Stack {
     });
 
     // create container component - com.example.container
-    const version_container = "1.0.4"
+    const version_container = "1.0.6"
     new containerComponent(scope, "container-component", version_container)   
 
     // create local component
-    const version_consumer = "1.0.2"
+    const version_consumer = "1.0.0"
     new localComponent(scope, "local-component", version_consumer, s3Bucket.bucketName)   
 
-    // deploy components - com.example.consumer
+    // deploy components 
     new componentDeployment(scope, "deployments", version_consumer, version_container, accountId, deviceName)   
   }
 }
@@ -106,7 +106,7 @@ export class containerComponent extends cdk.Stack {
             "os": "all"
           },
           "Lifecycle": {
-            "Run": "docker run ${imageUri} -v \$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:\$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT"
+            "Run":"docker run ${imageUri}"			
           },
           "Artifacts": [
             {
@@ -117,11 +117,27 @@ export class containerComponent extends cdk.Stack {
       ]
     }`
 
-    const cfnComponentVersion = new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion', {
+    const cfnComponentVersion = new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion_Container', {
       inlineRecipe: recipe,
     }); 
   }
 }
+
+/*
+"Lifecycle": {
+  "Run": "docker run ${imageUri} -v \$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:\$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT"
+}
+"Lifecycle": {
+  "Run": "docker run ${imageUri} -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT"
+}
+
+"Run":"docker run ${imageUri} -v /greengrass/v2:/greengrass/v2 -e AWS_REGION -e SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN"		
+
+"Run": "docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e MQTT_TOPIC=\"{configuration:/topic}\" -e MQTT_MESSAGE=\"{configuration:/message}\" -e MQTT_QOS=\"{configuration:/qos}\" --rm publish-to-iot-core"
+
+            "Run":"docker run ${imageUri} -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e AWS_CONTAINER_CREDENTIALS_FULL_URI"		
+      },
+*/
 
 export class localComponent extends cdk.Stack {
   constructor(scope: Construct, id: string, version: string, bucketName: string, props?: cdk.StackProps) {    
@@ -192,8 +208,24 @@ export class componentDeployment extends cdk.Stack {
           componentVersion: version_container, 
         },  
         "aws.greengrass.Cli": {
-          componentVersion: "2.8.1", 
-        }
+          componentVersion: "2.9.0", 
+        },
+        "aws.greengrass.LegacySubscriptionRouter": {
+          componentVersion: "2.1.8", 
+          configurationUpdate: {
+            merge: `{
+              "subscriptions": {
+                "com.example.consumer": {
+                  "id": "Greengrass_Container_Consumer",
+                  "source": "component:com.example.consumer",
+                  "subject": "local/topic",
+                  "target": "component:com.example.container"   
+                }
+              }
+            }`,    // target: cloud or lambda component name(component:com.example.HelloWorldLambda) or ARN of a Lambda function
+            reset: [],
+          }, 
+        } 
       },
       deploymentName: 'component-deployment',
       deploymentPolicies: {

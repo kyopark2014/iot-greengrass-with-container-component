@@ -1,15 +1,22 @@
 import sys
 import time
 import traceback
-
+import logging
+import json
 from awsiot.greengrasscoreipc.clientv2 import GreengrassCoreIPCClientV2
 from awsiot.greengrasscoreipc.model import (
     SubscriptionResponseMessage,
     UnauthorizedError
 )
 
-def handler():
+logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
+def handler(event, context):
     topic = 'local/topic'
+    print('topic: ', topic) 
+
+    logger.info(json.dumps(event))
 
     try:
         ipc_client = GreengrassCoreIPCClientV2()
