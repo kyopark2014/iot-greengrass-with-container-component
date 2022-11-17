@@ -12,7 +12,7 @@ Greengrass 디바이스에 접속하여 아래와 같이 사용자를 doker user
 sudo usermod -aG docker ggc_user
 ```
 
-ECR을 사용하기 위해서는 [device role](https://docs.aws.amazon.com/greengrass/v2/developerguide/device-service-role.html)을 참조하여, GreengrassV2TokenExchangeRole에 아래의 permission을 추가합니다. 
+ECR을 사용하기 위해서는 [device role](https://docs.aws.amazon.com/greengrass/v2/developerguide/device-service-role.html)을 참조하여, [IAM Console](https://us-east-1.console.aws.amazon.com/iamv2/home?region=ap-northeast-2#/roles/details/GreengrassV2TokenExchangeRole?section=permissions)에서 GreengrassV2TokenExchangeRole에 아래의 permission을 추가합니다. 
 
 ```java
 {
