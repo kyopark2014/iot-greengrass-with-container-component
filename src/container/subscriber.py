@@ -44,7 +44,7 @@ class StreamHandler(client.SubscribeToTopicStreamHandler):
     def on_stream_closed(self) -> None:
         pass
 
-topic = "my/topic"
+topic = "local/topic"
 
 request = SubscribeToTopicRequest()
 request.topic = topic

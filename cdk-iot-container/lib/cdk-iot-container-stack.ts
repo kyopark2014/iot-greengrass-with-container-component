@@ -42,7 +42,7 @@ export class CdkIotContainerStack extends cdk.Stack {
     });
 
     // create container component - com.example.container
-    const version_container = "1.0.6"
+    const version_container = "1.1.0"
     new containerComponent(scope, "container-component", version_container)   
 
     // create local component
@@ -106,7 +106,7 @@ export class containerComponent extends cdk.Stack {
             "os": "all"
           },
           "Lifecycle": {
-            "Run":"docker run ${imageUri}"			
+            "Run":"docker run --rm -v /greengrass/v2:/greengrass/v2 -v /home/ubuntu/environment/subscriberdocker/logfiles:/tmp -e AWS_REGION -e SVCUID -e MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT} -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri}"
           },
           "Artifacts": [
             {
