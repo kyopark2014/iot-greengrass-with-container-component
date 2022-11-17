@@ -35,7 +35,12 @@ ECR을 사용하기 위해서는 [device role](https://docs.aws.amazon.com/green
 
 ### Recipe
 
-lifecycle에서 아래와 
+lifecycle에서 아래와 같은 argument를 설정할 수 있습니다. 
+
+- --network=host: container가 stream manager compnent에 연결할 수 있도록 host network에 access합니다. 
+- -e AWS_CONTAINER_AUTHORIZATION_TOKEN: 환경변수 
+- -v: 컨테이너에서 component의 [work folder](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html#component-recipe-work-path)를 mount 합니다. 예) -v {work:path}:{work:path} 
+- --rm: 컨테이너를 정리(clean up)합니다. 예) --rm stream-file-to-s3
 
 
 ### Greengrass Commands와 Memo
