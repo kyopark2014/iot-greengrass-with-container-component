@@ -1,0 +1,47 @@
+{
+    "RecipeFormatVersion": "2020-01-25",
+    "ComponentName": "com.example.container",
+    "ComponentVersion": "1.0.0",
+    "ComponentDescription": "A component that runs a ML docker container from ECR.",
+    "ComponentPublisher": "Amazon",
+    "ComponentDependencies": {
+        "aws.greengrass.DockerApplicationManager": {
+            "VersionRequirement": "~2.0.0"
+        },
+        "aws.greengrass.TokenExchangeService": {
+            "VersionRequirement": "~2.0.0"
+        }
+    },
+    "ComponentConfiguration": {
+        "DefaultConfiguration": {
+            "accessControl": {
+                "aws.greengrass.ipc.pubsub": {
+                    "com.example.container:pubsub:1": {
+                        "policyDescription": "Allows access to publish to all topics.",
+                        "operations": [
+                            "aws.greengrass#SubscribeToTopic"
+                        ],
+                        "resources": [
+                            "*"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "Manifests": [
+        {
+            "Platform": {
+                "os": "all"
+            },
+            "Lifecycle": {
+                "Run": "docker run example:v1"
+            },
+            "Artifacts": [
+                {
+                  "URI": "docker:example:v1"
+                }
+            ]
+        }
+    ]
+}
