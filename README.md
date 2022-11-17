@@ -33,6 +33,11 @@ ECR을 사용하기 위해서는 [device role](https://docs.aws.amazon.com/green
 }
 ```
 
+### Recipe
+
+lifecycle에서 아래와 
+
+
 ### Greengrass Commands와 Memo
 
 유용한 [Greengrass 명령어와 중요한 메모들](https://github.com/kyopark2014/iot-greengrass/blob/main/greengrass-commands.md)를 정리하였습니다.
