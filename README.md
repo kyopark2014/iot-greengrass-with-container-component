@@ -45,6 +45,17 @@ lifecycle에서 아래와 같은 argument를 설정할 수 있습니다.
 - -v: 컨테이너에서 component의 [work folder](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html#component-recipe-work-path)를 mount 합니다. 예) -v {work:path}:{work:path} 
 - --rm: 컨테이너를 정리(clean up)합니다. 예) --rm publish-to-iot-core
 
+### Use interprocess communication in Docker container components
+
+[Use interprocess communication in Docker container components](https://docs.aws.amazon.com/greengrass/v2/developerguide/run-docker-container.html)
+
+To use IPC in a Docker container component, you must run the Docker container with the following parameters:
+
+Mount the IPC socket in the container. The Greengrass nucleus provides the IPC socket file path in the AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT environment variable.
+
+Set the SVCUID and AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT environment variables to the values that the Greengrass nucleus provides to components. Your component uses these environment variables to authenticate connections to the Greengrass nucleus.
+
+
 
 
 ### Greengrass Commands와 Memo
