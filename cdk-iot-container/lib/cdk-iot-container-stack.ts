@@ -42,11 +42,11 @@ export class CdkIotContainerStack extends cdk.Stack {
     });
 
     // container subscriber
-    const version_container_subscriber = "1.1.14"
+    const version_container_subscriber = "2.0.2"
     new containerSubscriberComponent(scope, "container-subscriber", version_container_subscriber)   
 
     // container publisher
-    const version_container_publisher = "1.1.14"
+    const version_container_publisher = "2.0.3"
     new containerPublisherComponent(scope, "container-publisher", version_container_publisher)   
 
     // component publisher
@@ -114,7 +114,7 @@ export class containerSubscriberComponent extends cdk.Stack {
             "os": "all"
           },
           "Lifecycle": {           
-            "Run":"docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:/greengrass/v2/ipc.socket -e AWS_CONTAINER_AUTHORIZATION_TOKEN=$AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID=$SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT=/greengrass/v2/ipc.socket -e AWS_CONTAINER_CREDENTIALS_FULL_URI=$AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri} --network=host"
+            "Run":"docker run -v /greengrass/v2/ipc.socket:/greengrass/v2/ipc.socket -e AWS_CONTAINER_AUTHORIZATION_TOKEN=$AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID=$SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT=/greengrass/v2/ipc.socket -e AWS_CONTAINER_CREDENTIALS_FULL_URI=$AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri} --network=host"
           },
           "Artifacts": [
             {
@@ -204,7 +204,7 @@ export class containerPublisherComponent extends cdk.Stack {
             "os": "all"
           },
           "Lifecycle": {
-            "Run":"docker run -e AWS_CONTAINER_AUTHORIZATION_TOKEN=$AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID=$SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT=/greengrass/v2/ipc.socket -e AWS_CONTAINER_CREDENTIALS_FULL_URI=/greengrass/v2/ipc.socket ${imageUri} --network=host"
+            "Run":"docker run -v /greengrass/v2/ipc.socket:/greengrass/v2/ipc.socket -e AWS_CONTAINER_AUTHORIZATION_TOKEN=$AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID=$SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT=/greengrass/v2/ipc.socket -e AWS_CONTAINER_CREDENTIALS_FULL_URI=$AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri} --network=host"
           },
           "Artifacts": [
             {
@@ -335,9 +335,9 @@ export class componentDeployment extends cdk.Stack {
     const cfnDeployment = new greengrassv2.CfnDeployment(this, 'MyCfnDeployment', {
       targetArn: `arn:aws:iot:ap-northeast-2:`+accountId+`:thing/`+deviceName,    
       components: {
-        "com.component.publisher": {
+      /*  "com.component.publisher": {
           componentVersion: version_component_publisher, 
-        }, 
+        }, */
         "com.component.subscriber": {
           componentVersion: version_component_subscriber, 
         },

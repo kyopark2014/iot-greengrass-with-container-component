@@ -1,22 +1,49 @@
 import sys
 import traceback
 import time
+import json
+import os
+import pandas as pd
 from awsiot.greengrasscoreipc.clientv2 import GreengrassCoreIPCClientV2
 from awsiot.greengrasscoreipc.model import (
     PublishMessage,
     BinaryMessage
 )
 
+def load_event(BASE_DIR):
+    json_file = pd.read_json(BASE_DIR+'/samples.json')
+
+    json_data = json_file.to_json(orient='records')
+
+    event = {
+        'body': json_data,
+        'isBase64Encoded': False
+    }
+    print('event: ', event)
+
+    return event
+
 def main():
     topic = 'local/topic'
-    message = 'hello'
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
+    print('BASE_DIR = ', BASE_DIR)
+
+    # load samples
+    message = load_event(BASE_DIR)
 
     try:
         ipc_client = GreengrassCoreIPCClientV2()
 
         try:
             while True: 
-                publish_binary_message_to_topic(ipc_client, topic, message)
+                # binary
+                # publish_binary_message_to_topic(ipc_client, topic, message)
+                
+                # json
+                publish_binary_message_to_topic(ipc_client, topic,  json.dumps(message))
+
+                print('message:', json.dumps(message))
+                
                 time.sleep(5)
         except InterruptedError:
             print('Publisher interrupted.')                
