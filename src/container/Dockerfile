@@ -1,4 +1,4 @@
-FROM public.ecr.aws/amazonlinux/amazonlinux:latest
+FROM amazon/aws-lambda-python:3.8
 
 # Install dependencies
 RUN yum update -y && \

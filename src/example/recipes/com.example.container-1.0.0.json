@@ -35,11 +35,11 @@
                 "os": "all"
             },
             "Lifecycle": {
-                "Run": "docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID -e AWS_CONTAINER_CREDENTIALS_FULL_URI 677146750822.dkr.ecr.ap-northeast-2.amazonaws.com/cdk-hnb659fds-container-assets-677146750822-ap-northeast-2:1fc72579222e8f6909a51b27a9c495d41447eaa72ff57b37f42f4900d24ad0d1"
+                "Run": "docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID -e AWS_CONTAINER_CREDENTIALS_FULL_URI 677146750822.dkr.ecr.ap-northeast-2.amazonaws.com/cdk-hnb659fds-container-assets-677146750822-ap-northeast-2:5ddc225f94c0562a8021d4d0b31002b7adf12ec67f86a911dc2b13be42fc33b2"
             },
             "Artifacts": [
                 {
-                  "URI": "docker:677146750822.dkr.ecr.ap-northeast-2.amazonaws.com/cdk-hnb659fds-container-assets-677146750822-ap-northeast-2:1fc72579222e8f6909a51b27a9c495d41447eaa72ff57b37f42f4900d24ad0d1"
+                  "URI": "docker:677146750822.dkr.ecr.ap-northeast-2.amazonaws.com/cdk-hnb659fds-container-assets-677146750822-ap-northeast-2:5ddc225f94c0562a8021d4d0b31002b7adf12ec67f86a911dc2b13be42fc33b2"
                 }
             ]
         }
