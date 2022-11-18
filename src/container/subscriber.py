@@ -8,10 +8,9 @@ from awsiot.greengrasscoreipc.model import (
     UnauthorizedError
 )
 
-
 def main():
-    args = sys.argv[1:]
-    topic = args[0]
+    topic = 'local/topic'
+    print('topic: ' + topic)
 
     try:
         ipc_client = GreengrassCoreIPCClientV2()
