@@ -67,3 +67,5 @@ msg_count_limit = os.environ.get("MSG_COUNT_LIMIT", "2000")
 [Run a Docker container](https://docs.aws.amazon.com/greengrass/v2/developerguide/run-docker-container.html)
 
 [Authorize core devices to interact with AWS services](https://docs.aws.amazon.com/greengrass/v2/developerguide/device-service-role.html)
+
+[AWS_IO_CONNECTION_REFUSED - Greengrass v2 IPC](https://repost.aws/questions/QUtC1ZkV4OShak0dUmmLV6KA/aws-io-connection-refused-greengrass-v-2-ipc)
