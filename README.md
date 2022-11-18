@@ -38,7 +38,8 @@ ECR을 사용하기 위해서는 [device role](https://docs.aws.amazon.com/green
 lifecycle에서 아래와 같은 argument를 설정할 수 있습니다. 
 
 - --network=host: 컨테이너가 stream manager compnent에 연결할 수 있도록 [host network에 local TLS](https://docs.docker.com/engine/reference/run/#network-host)로 access합니다. 이것은 linux용 Docker에서만 사용할 수 있습니다. 
-- -e SVCUID: Necleus와 연결할때 필요한 환경변수입니다. 
+- -e SVCUID: Component가 IPC socket에 연결하기 위해 필요한 secret token으로 Necleus와 연결할때 필요한 환경변수입니다.
+
 - -v AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT: 컨테이너가 IPC Socket을 mount할 수 있도록 IPC socket file path를 환경변수로 제공합니다. 예) -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT
 - -e AWS_CONTAINER_AUTHORIZATION_TOKEN: Necleus게 제공하는 환경변수로 AWS Credential을 얻어올때 필요합니다.  
 - -e AWS_CONTAINER_CREDENTIALS_FULL_URI: Necleus게 제공하는 환경변수로 AWS Credential을 얻어올때 필요합니다. 
@@ -78,5 +79,7 @@ msg_count_limit = os.environ.get("MSG_COUNT_LIMIT", "2000")
 [Run a Docker container](https://docs.aws.amazon.com/greengrass/v2/developerguide/run-docker-container.html)
 
 [Authorize core devices to interact with AWS services](https://docs.aws.amazon.com/greengrass/v2/developerguide/device-service-role.html)
+
+[Component environment variable reference](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-environment-variables.html)
 
 [AWS_IO_CONNECTION_REFUSED - Greengrass v2 IPC](https://repost.aws/questions/QUtC1ZkV4OShak0dUmmLV6KA/aws-io-connection-refused-greengrass-v-2-ipc)
