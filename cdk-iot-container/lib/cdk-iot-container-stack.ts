@@ -50,7 +50,7 @@ export class CdkIotContainerStack extends cdk.Stack {
     new localComponent(scope, "local-component", version_consumer, s3Bucket.bucketName)   
 
     // deploy components 
-  //  new componentDeployment(scope, "deployments", version_consumer, version_container, accountId, deviceName)   
+    new componentDeployment(scope, "deployments", version_consumer, version_container, accountId, deviceName)   
   }
 }
 
@@ -201,31 +201,15 @@ export class componentDeployment extends cdk.Stack {
     const cfnDeployment = new greengrassv2.CfnDeployment(this, 'MyCfnDeployment', {
       targetArn: `arn:aws:iot:ap-northeast-2:`+accountId+`:thing/`+deviceName,    
       components: {
-        "com.example.consumer": {
+      /*  "com.example.consumer": {
           componentVersion: version_consumer, 
-        },
+        }, */
         "com.example.container": {
           componentVersion: version_container, 
         },  
         "aws.greengrass.Cli": {
           componentVersion: "2.9.0", 
         },
-        "aws.greengrass.LegacySubscriptionRouter": {
-          componentVersion: "2.1.8", 
-          configurationUpdate: {
-            merge: `{
-              "subscriptions": {
-                "com.example.consumer": {
-                  "id": "Greengrass_Container_Consumer",
-                  "source": "component:com.example.consumer",
-                  "subject": "local/topic",
-                  "target": "component:com.example.container"   
-                }
-              }
-            }`,    // target: cloud or lambda component name(component:com.example.HelloWorldLambda) or ARN of a Lambda function
-            reset: [],
-          }, 
-        } 
       },
       deploymentName: 'component-deployment',
       deploymentPolicies: {

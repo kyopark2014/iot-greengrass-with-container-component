@@ -1,60 +1,63 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: MIT-0
-import time
-import json
 import sys
-import os
-import signal
-import awsiot.greengrasscoreipc
-import awsiot.greengrasscoreipc.client as client
+import time
+import traceback
+
+from awsiot.greengrasscoreipc.clientv2 import GreengrassCoreIPCClientV2
 from awsiot.greengrasscoreipc.model import (
-    SubscribeToTopicRequest,
-    SubscriptionResponseMessage
+    SubscriptionResponseMessage,
+    UnauthorizedError
 )
 
-from threading import Event
-e = Event()
 
-#kill process 
-def sighandler(a,b):
-    sys.exit(0)
-    
-signal.signal(signal.SIGINT | signal.SIGTERM, sighandler)
+def main():
+    args = sys.argv[1:]
+    topic = args[0]
 
-TIMEOUT = 10
-ipc_client = awsiot.greengrasscoreipc.connect()
-msg_count = 0
-class StreamHandler(client.SubscribeToTopicStreamHandler):
-    def __init__(self):
-        super().__init__()
+    try:
+        ipc_client = GreengrassCoreIPCClientV2()
+        # Subscription operations return a tuple with the response and the operation.
+        _, operation = ipc_client.subscribe_to_topic(topic=topic, on_stream_event=on_stream_event,
+                                                     on_stream_error=on_stream_error, on_stream_closed=on_stream_closed)
+        print('Successfully subscribed to topic: ' + topic)
 
-    def on_stream_event(self, event: SubscriptionResponseMessage) -> None:
-        global msg_count
-        message_string = event.json_message.message
-        print(f"{msg_count}: {message_string}")
-        with open('/tmp/Greengrass_Subscriber.log', 'a') as f:
-            print(message_string, file=f)
-        msg_count = msg_count + 1
-        if msg_count > int(os.environ.get("MSG_COUNT_LIMIT", "2000")):
-            e.set()
+        # Keep the main thread alive, or the process will exit.
+        try:
+            while True:
+                time.sleep(10)
+        except InterruptedError:
+            print('Subscribe interrupted.')
 
-    def on_stream_error(self, error: Exception) -> bool:
-        return True
+        # To stop subscribing, close the stream.
+        operation.close()
+    except UnauthorizedError:
+        print('Unauthorized error while subscribing to topic: ' +
+              topic, file=sys.stderr)
+        traceback.print_exc()
+        exit(1)
+    except Exception:
+        print('Exception occurred', file=sys.stderr)
+        traceback.print_exc()
+        exit(1)
 
-    def on_stream_closed(self) -> None:
-        pass
 
-topic = "local/topic"
+def on_stream_event(event: SubscriptionResponseMessage) -> None:
+    try:
+        message = str(event.binary_message.message, 'utf-8')
+        topic = event.binary_message.context.topic
+        print('Received new message on topic %s: %s' % (topic, message))
+    except:
+        traceback.print_exc()
 
-request = SubscribeToTopicRequest()
-request.topic = topic
-handler = StreamHandler()
-operation = ipc_client.new_subscribe_to_topic(handler)
-print(f"subscribed to topic {topic}")
-future = operation.activate(request)
-future.result()
 
-e.wait()
+def on_stream_error(error: Exception) -> bool:
+    print('Received a stream error.', file=sys.stderr)
+    traceback.print_exc()
+    return False  # Return True to close stream, False to keep stream open.
 
-print(f"We are done. Got {msg_count} messages")
-operation.close()
+
+def on_stream_closed() -> None:
+    print('Subscribe to topic stream closed.')
+
+
+if __name__ == '__main__':
+    main()
