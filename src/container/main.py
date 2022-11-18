@@ -1,6 +1,7 @@
 import sys
 import time
 import traceback
+import logging
 
 from awsiot.greengrasscoreipc.clientv2 import GreengrassCoreIPCClientV2
 from awsiot.greengrasscoreipc.model import (
@@ -8,9 +9,14 @@ from awsiot.greengrasscoreipc.model import (
     UnauthorizedError
 )
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 def main():
     topic = 'local/topic'
     print('topic: ' + topic)
+
+    logger.info(topic)
 
     try:
         ipc_client = GreengrassCoreIPCClientV2()
@@ -44,6 +50,8 @@ def on_stream_event(event: SubscriptionResponseMessage) -> None:
         message = str(event.binary_message.message, 'utf-8')
         topic = event.binary_message.context.topic
         print('Received new message on topic %s: %s' % (topic, message))
+
+        logger.debug(message)
     except:
         traceback.print_exc()
 
