@@ -54,12 +54,11 @@ lifecycle에서 아래와 같은 argument를 설정할 수 있습니다.
 
 ### Recipe에서 environment variable
 
-"docker run"에서 "MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT}"와 
-docker run MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT} 
-docker run MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT} 
-			
-os.environ.get("MSG_COUNT_LIMIT", "2000")
+"docker run"에서 "MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT}"와 같이 값을 입력후 아래처럼 사용합니다. 
 
+```java
+msg_count_limit = os.environ.get("MSG_COUNT_LIMIT", "2000")
+```
 
 ## Reference
 
