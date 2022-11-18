@@ -1,6 +1,6 @@
 {
     "RecipeFormatVersion": "2020-01-25",
-    "ComponentName": "com.example.subscriber",
+    "ComponentName": "com.component.subscriber",
     "ComponentVersion": "1.0.0",
     "ComponentDescription": "A component that subscribes to messages.",
     "ComponentPublisher": "Amazon",
@@ -8,7 +8,7 @@
       "DefaultConfiguration": {
         "accessControl": {
           "aws.greengrass.ipc.pubsub": {
-            "com.example.subscriber:pubsub:1": {
+            "com.component.subscriber:pubsub:1": {
               "policyDescription": "Allows access to subscribe to all topics.",
               "operations": [
                 "aws.greengrass#SubscribeToTopic"

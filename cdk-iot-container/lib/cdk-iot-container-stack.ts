@@ -41,33 +41,33 @@ export class CdkIotContainerStack extends cdk.Stack {
       destinationBucket: s3Bucket,
     });
 
-    // create container component - com.example.container
-    const version_container = "1.0.5"
-    new containerComponent(scope, "container-component", version_container)   
+    // container subscriber
+    const version_container_subscriber = "1.0.5"
+    new containerSubscriberComponent(scope, "container-subscriber", version_container_subscriber)   
 
     // container publisher
-    const version_publisher = "1.0.0"
-    new containerPublisherComponent(scope, "container-publisher", version_publisher)   
+    const version_container_publisher = "1.0.0"
+    new containerPublisherComponent(scope, "container-publisher", version_container_publisher)   
 
-    // create consumer component
-    const version_consumer = "1.0.0"
-    new consumerComponent(scope, "consumer-component", version_consumer, s3Bucket.bucketName)   
+    // component publisher
+    const version_component_publisher = "1.0.0"
+    new localPublisherComponent(scope, "component-publisher", version_component_publisher, s3Bucket.bucketName)   
 
-    // create subscriber component
-    const version_subscriber = "1.0.0"
-    new subscriberComponent(scope, "subscriber-component", version_subscriber, s3Bucket.bucketName)   
+    // component subscriber 
+    const version_component_subscriber = "1.0.0"
+    new localSubscriberComponent(scope, "component-subscriber", version_component_subscriber, s3Bucket.bucketName)   
     
     // deploy components 
-    new componentDeployment(scope, "deployments", version_consumer, version_subscriber, version_publisher, version_container, accountId, deviceName)   
+    new componentDeployment(scope, "deployments", version_component_publisher, version_component_subscriber, version_container_publisher, version_container_subscriber, accountId, deviceName)   
   }
 }
 
-export class containerComponent extends cdk.Stack {
+export class containerSubscriberComponent extends cdk.Stack {
   constructor(scope: Construct, id: string, version: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
     const asset = new DockerImageAsset(this, 'BuildImage', {
-      directory: path.join(__dirname, '../../src/container'),
+      directory: path.join(__dirname, '../../src/container-subscriber'),
     })
 
     const imageUri = asset.imageUri
@@ -76,10 +76,10 @@ export class containerComponent extends cdk.Stack {
       description: 'Image Uri',
     }); 
 
-    // recipe of component - com.example.container
-    const recipe_container = `{
+    // recipe of component
+    const receipe = `{
       "RecipeFormatVersion": "2020-01-25",
-      "ComponentName": "com.example.container",
+      "ComponentName": "com.container.subscriber",
       "ComponentVersion": "${version}",
       "ComponentDescription": "A component that runs a docker container from ECR.",
       "ComponentPublisher": "Amazon",
@@ -95,7 +95,7 @@ export class containerComponent extends cdk.Stack {
         "DefaultConfiguration": {
           "accessControl": {
             "aws.greengrass.ipc.pubsub": {
-              "com.example.container:pubsub:1": {
+              "com.container.subscriber:pubsub:1": {
                 "policyDescription": "Allows access to subscribe to all topics.",
                 "operations": [
                   "aws.greengrass#SubscribeToTopic"
@@ -125,8 +125,8 @@ export class containerComponent extends cdk.Stack {
       ]
     }`
 
-    const cfnComponentVersion = new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion_Container', {
-      inlineRecipe: recipe_container,
+    const cfnComponentVersion = new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion_ContainerSubscriber', {
+      inlineRecipe: receipe,
     }); 
   }
 }
@@ -161,10 +161,10 @@ export class containerPublisherComponent extends cdk.Stack {
       description: 'Publisher Image Uri',
     }); 
 
-    // recipe of component - com.example.publisher
-    const recipe_publisher = `{
+    // recipe of component 
+    const recipe = `{
       "RecipeFormatVersion": "2020-01-25",
-      "ComponentName": "com.example.publisher",
+      "ComponentName": "com.container.publisher",
       "ComponentVersion": "${version}",
       "ComponentDescription": "A component that runs a docker publisher from ECR.",
       "ComponentPublisher": "Amazon",
@@ -180,7 +180,7 @@ export class containerPublisherComponent extends cdk.Stack {
         "DefaultConfiguration": {
           "accessControl": {
             "aws.greengrass.ipc.pubsub": {
-              "com.example.publisher:pubsub:1": {
+              "com.container.publisher:pubsub:1": {
                 "policyDescription": "Allows access to publish to all topics.",
                 "operations": [
                   "aws.greengrass#PublishToTopic"
@@ -210,21 +210,21 @@ export class containerPublisherComponent extends cdk.Stack {
       ]
     }`
 
-    const cfnComponentVersion = new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion_Publisher', {
-      inlineRecipe: recipe_publisher,
+    const cfnComponentVersion = new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion_ContainerPublisher', {
+      inlineRecipe: recipe,
     }); 
   }
 }
 
 
-export class consumerComponent extends cdk.Stack {
+export class localPublisherComponent extends cdk.Stack {
   constructor(scope: Construct, id: string, version: string, bucketName: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
-    // recipe of component - com.example.consumer
-    const recipe_consumer = `{
+    // recipe of component 
+    const recipe = `{
       "RecipeFormatVersion": "2020-01-25",
-      "ComponentName": "com.example.consumer",
+      "ComponentName": "com.component.publisher",
       "ComponentVersion": "${version}",
       "ComponentDescription": "A component that consume the API.",
       "ComponentPublisher": "Amazon",
@@ -232,7 +232,7 @@ export class consumerComponent extends cdk.Stack {
         "DefaultConfiguration": {
           "accessControl": {
             "aws.greengrass.ipc.pubsub": {
-              "com.example.consumer:pubsub:1": {
+              "com.component.publisher:pubsub:1": {
                 "policyDescription": "Allows access to publish to all topics.",
                 "operations": [
                   "aws.greengrass#PublishToTopic"
@@ -251,34 +251,34 @@ export class consumerComponent extends cdk.Stack {
         },
         "Lifecycle": {
           "Install": "pip3 install awsiotsdk pandas",
-          "Run": "python3 -u {artifacts:path}/consumer.py"
+          "Run": "python3 -u {artifacts:path}/publisher.py"
         },
         "Artifacts": [
           {
-            "URI": "${'s3://'+bucketName}/consumer/artifacts/com.example.consumer/1.0.0/consumer.py"
+            "URI": "${'s3://'+bucketName}/component-publisher/artifacts/com.component.publisher/1.0.0/publisher.py"
           },
           {
-            "URI": "${'s3://'+bucketName}/consumer/artifacts/com.example.consumer/1.0.0/samples.json"
+            "URI": "${'s3://'+bucketName}/component-publisher/artifacts/com.component.publisher/1.0.0/samples.json"
           }
         ]
       }]
     }`
 
-    // recipe of component - com.example.consumer
-    new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion-Consumer', {
-      inlineRecipe: recipe_consumer,
+    // recipe of component - com.component.publisher
+    new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion-ComponentPublisher', {
+      inlineRecipe: recipe,
     });        
   }
 }
 
-export class subscriberComponent extends cdk.Stack {
+export class localSubscriberComponent extends cdk.Stack {
   constructor(scope: Construct, id: string, version: string, bucketName: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
-    // recipe of component - com.example.subscriber
-    const recipe_subscriber = `{
+    // recipe of component 
+    const recipe = `{
       "RecipeFormatVersion": "2020-01-25",
-      "ComponentName": "com.example.subscriber",
+      "ComponentName": "com.component.subscriber",
       "ComponentVersion": "${version}",
       "ComponentDescription": "A component that subcribes the API.",
       "ComponentPublisher": "Amazon",
@@ -286,7 +286,7 @@ export class subscriberComponent extends cdk.Stack {
         "DefaultConfiguration": {
           "accessControl": {
             "aws.greengrass.ipc.pubsub": {
-              "com.example.subscriber:pubsub:1": {
+              "com.component.subscriber:pubsub:1": {
                 "policyDescription": "Allows access to subscriber to all topics.",
                 "operations": [
                   "aws.greengrass#SubscribeToTopic"
@@ -309,38 +309,38 @@ export class subscriberComponent extends cdk.Stack {
         },
         "Artifacts": [
           {
-            "URI": "${'s3://'+bucketName}/subscriber/artifacts/com.example.subscriber/1.0.0/subscriber.py"
+            "URI": "${'s3://'+bucketName}/component-subscriber/artifacts/com.component.subscriber/1.0.0/subscriber.py"
           }
         ]
       }]
     }`
 
-    // recipe of component - com.example.subscriber
-    new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion-Subscriber', {
-      inlineRecipe: recipe_subscriber,
+    // recipe of component 
+    new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion-ComponentSubscriber', {
+      inlineRecipe: recipe,
     });        
   }
 }
 
 export class componentDeployment extends cdk.Stack {
-  constructor(scope: Construct, id: string, version_consumer: string, version_subscriber: string, version_publisher: string, version_container: string, accountId: string, deviceName: string, props?: cdk.StackProps) {    
+  constructor(scope: Construct, id: string, version_component_publisher: string, version_component_subscriber: string, version_container_publisher: string, version_container_subscriber: string, accountId: string, deviceName: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
     // deployments
     const cfnDeployment = new greengrassv2.CfnDeployment(this, 'MyCfnDeployment', {
       targetArn: `arn:aws:iot:ap-northeast-2:`+accountId+`:thing/`+deviceName,    
       components: {
-        "com.example.consumer": {
-          componentVersion: version_consumer, 
+        "com.component.publisher": {
+          componentVersion: version_component_publisher, 
         }, 
-        "com.example.subscriber": {
-          componentVersion: version_subscriber, 
+        "com.component.subscriber": {
+          componentVersion: version_component_subscriber, 
         },
-        "com.example.publisher": {
-          componentVersion: version_publisher, 
+        "com.container.publisher": {
+          componentVersion: version_container_publisher, 
         }, 
-        "com.example.container": {
-          componentVersion: version_container, 
+        "com.container.subscriber": {
+          componentVersion: version_container_subscriber, 
         },  
         "aws.greengrass.Cli": {
           componentVersion: "2.9.0", 
