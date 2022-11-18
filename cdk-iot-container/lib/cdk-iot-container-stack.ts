@@ -42,7 +42,7 @@ export class CdkIotContainerStack extends cdk.Stack {
     });
 
     // create container component - com.example.container
-    const version_container = "1.1.3"
+    const version_container = "1.1.4"
     new containerComponent(scope, "container-component", version_container)   
 
     // create local component
