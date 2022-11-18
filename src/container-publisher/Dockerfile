@@ -6,14 +6,13 @@ RUN /var/lang/bin/python3.8 -m pip install joblib
 RUN /var/lang/bin/python3.8 -m pip install scikit-learn
 RUN /var/lang/bin/python3.8 -m pip install awsiotsdk pandas
 
-WORKDIR /var/task/lambda-with-ML-container
+WORKDIR /var/task/publisher
 
-COPY inference.py {LAMBDA_TASK_ROOT}
-COPY main.py {LAMBDA_TASK_ROOT}
+COPY publisher.py {LAMBDA_TASK_ROOT}
 
 COPY . .
 
-RUN pip install -r requirements.txt
+#RUN pip install -r requirements.txt
 
-#CMD ["main.main"]
-CMD ["python3","-u", "main.py"]
+#CMD ["publisher.main"]
+CMD ["python3","-u", "publisher.py"]

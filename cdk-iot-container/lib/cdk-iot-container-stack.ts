@@ -42,8 +42,12 @@ export class CdkIotContainerStack extends cdk.Stack {
     });
 
     // create container component - com.example.container
-    const version_container = "1.0.3"
+    const version_container = "1.0.5"
     new containerComponent(scope, "container-component", version_container)   
+
+    // container publisher
+    const version_publisher = "1.0.0"
+    new containerPublisherComponent(scope, "container-publisher", version_publisher)   
 
     // create consumer component
     const version_consumer = "1.0.0"
@@ -54,7 +58,7 @@ export class CdkIotContainerStack extends cdk.Stack {
     new subscriberComponent(scope, "subscriber-component", version_subscriber, s3Bucket.bucketName)   
     
     // deploy components 
-    new componentDeployment(scope, "deployments", version_consumer, version_subscriber, version_container, accountId, deviceName)   
+    new componentDeployment(scope, "deployments", version_consumer, version_subscriber, version_publisher, version_container, accountId, deviceName)   
   }
 }
 
@@ -73,7 +77,7 @@ export class containerComponent extends cdk.Stack {
     }); 
 
     // recipe of component - com.example.container
-    const recipe = `{
+    const recipe_container = `{
       "RecipeFormatVersion": "2020-01-25",
       "ComponentName": "com.example.container",
       "ComponentVersion": "${version}",
@@ -110,7 +114,7 @@ export class containerComponent extends cdk.Stack {
             "os": "all"
           },
           "Lifecycle": {
-            "Run":"docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID -e AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri}"
+            "Run":"docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID -e AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri} --network=host"
           },
           "Artifacts": [
             {
@@ -122,7 +126,7 @@ export class containerComponent extends cdk.Stack {
     }`
 
     const cfnComponentVersion = new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion_Container', {
-      inlineRecipe: recipe,
+      inlineRecipe: recipe_container,
     }); 
   }
 }
@@ -142,6 +146,76 @@ export class containerComponent extends cdk.Stack {
             "Run":"docker run ${imageUri} -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e SVCUID -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e AWS_CONTAINER_CREDENTIALS_FULL_URI"		
       },
 */
+
+export class containerPublisherComponent extends cdk.Stack {
+  constructor(scope: Construct, id: string, version: string, props?: cdk.StackProps) {    
+    super(scope, id, props);
+
+    const asset = new DockerImageAsset(this, 'BuildImage', {
+      directory: path.join(__dirname, '../../src/container-publisher'),
+    })
+
+    const imageUri = asset.imageUri
+    new cdk.CfnOutput(this, 'PublisherImageUri', {
+      value: imageUri,
+      description: 'Publisher Image Uri',
+    }); 
+
+    // recipe of component - com.example.publisher
+    const recipe_publisher = `{
+      "RecipeFormatVersion": "2020-01-25",
+      "ComponentName": "com.example.publisher",
+      "ComponentVersion": "${version}",
+      "ComponentDescription": "A component that runs a docker publisher from ECR.",
+      "ComponentPublisher": "Amazon",
+      "ComponentDependencies": {
+        "aws.greengrass.DockerApplicationManager": {
+          "VersionRequirement": "~2.0.0"
+        },
+        "aws.greengrass.TokenExchangeService": {
+          "VersionRequirement": "~2.0.0"
+        }
+      },
+      "ComponentConfiguration": {
+        "DefaultConfiguration": {
+          "accessControl": {
+            "aws.greengrass.ipc.pubsub": {
+              "com.example.publisher:pubsub:1": {
+                "policyDescription": "Allows access to publish to all topics.",
+                "operations": [
+                  "aws.greengrass#PublishToTopic"
+                ],
+                "resources": [
+                  "*"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Manifests": [
+        {
+          "Platform": {
+            "os": "all"
+          },
+          "Lifecycle": {
+            "Run":"docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID -e AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri} --network=host"
+          },
+          "Artifacts": [
+            {
+              "URI": "docker:${imageUri}"
+            }
+          ]
+        }
+      ]
+    }`
+
+    const cfnComponentVersion = new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion_Publisher', {
+      inlineRecipe: recipe_publisher,
+    }); 
+  }
+}
+
 
 export class consumerComponent extends cdk.Stack {
   constructor(scope: Construct, id: string, version: string, bucketName: string, props?: cdk.StackProps) {    
@@ -249,7 +323,7 @@ export class subscriberComponent extends cdk.Stack {
 }
 
 export class componentDeployment extends cdk.Stack {
-  constructor(scope: Construct, id: string, version_consumer: string, version_subscriber: string, version_container: string, accountId: string, deviceName: string, props?: cdk.StackProps) {    
+  constructor(scope: Construct, id: string, version_consumer: string, version_subscriber: string, version_publisher: string, version_container: string, accountId: string, deviceName: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
     // deployments
@@ -261,6 +335,9 @@ export class componentDeployment extends cdk.Stack {
         }, 
         "com.example.subscriber": {
           componentVersion: version_subscriber, 
+        },
+        "com.example.publisher": {
+          componentVersion: version_publisher, 
         }, 
         "com.example.container": {
           componentVersion: version_container, 
