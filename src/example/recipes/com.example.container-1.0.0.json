@@ -35,11 +35,11 @@
                 "os": "all"
             },
             "Lifecycle": {
-                "Run": "docker run --rm -v /greengrass/v2:/greengrass/v2 -v /home/ubuntu/environment/subscriberdocker/logfiles:/tmp -e AWS_REGION -e SVCUID -e MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT} -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e AWS_CONTAINER_CREDENTIALS_FULL_URI 677146750822.dkr.ecr.ap-northeast-2.amazonaws.com/cdk-hnb659fds-container-assets-677146750822-ap-northeast-2:01261be30308d619f131a6711c23214e3796c32f974be5679c2187e63fcb7d02"
+                "Run": "docker run --rm -v /greengrass/v2:/greengrass/v2 -v /home/ubuntu/environment/subscriberdocker/logfiles:/tmp -e AWS_REGION -e SVCUID -e MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT} -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e AWS_CONTAINER_CREDENTIALS_FULL_URI 677146750822.dkr.ecr.ap-northeast-2.amazonaws.com/cdk-hnb659fds-container-assets-677146750822-ap-northeast-2:11539f556e96e5bddb12b2533a12f64942e7457132b5b9e40f4728336ce3bb58"
             },
             "Artifacts": [
                 {
-                  "URI": "docker:677146750822.dkr.ecr.ap-northeast-2.amazonaws.com/cdk-hnb659fds-container-assets-677146750822-ap-northeast-2:01261be30308d619f131a6711c23214e3796c32f974be5679c2187e63fcb7d02"
+                  "URI": "docker:677146750822.dkr.ecr.ap-northeast-2.amazonaws.com/cdk-hnb659fds-container-assets-677146750822-ap-northeast-2:11539f556e96e5bddb12b2533a12f64942e7457132b5b9e40f4728336ce3bb58"
                 }
             ]
         }

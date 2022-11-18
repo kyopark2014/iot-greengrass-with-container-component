@@ -50,7 +50,7 @@ export class CdkIotContainerStack extends cdk.Stack {
     new localComponent(scope, "local-component", version_consumer, s3Bucket.bucketName)   
 
     // deploy components 
-    new componentDeployment(scope, "deployments", version_consumer, version_container, accountId, deviceName)   
+    //new componentDeployment(scope, "deployments", version_consumer, version_container, accountId, deviceName)   
   }
 }
 
