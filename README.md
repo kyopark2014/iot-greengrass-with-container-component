@@ -46,9 +46,20 @@ lifecycle에서 아래와 같은 argument를 설정할 수 있습니다.
 - --rm: 컨테이너를 정리(clean up)합니다. 예) --rm publish-to-iot-core
 
 
+
 ### Greengrass Commands와 Memo
 
 유용한 [Greengrass 명령어와 중요한 메모들](https://github.com/kyopark2014/iot-greengrass/blob/main/greengrass-commands.md)를 정리하였습니다.
+
+
+### Recipe에서 environment variable
+
+"docker run"에서 "MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT}"와 
+docker run MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT} 
+docker run MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT} 
+			
+os.environ.get("MSG_COUNT_LIMIT", "2000")
+
 
 ## Reference
 
