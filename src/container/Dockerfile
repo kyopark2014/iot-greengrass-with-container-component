@@ -1,16 +1,18 @@
+# lambda base image (python)
 FROM amazon/aws-lambda-python:3.8
 
-# Install dependencies
-RUN yum update -y && \
-    yum install -y python3 && \
-    yum install -y python3-pip && \
-    pip3 install numpy && \
-    pip3 install awsiotsdk
+RUN /var/lang/bin/python3.8 -m pip install --upgrade pip
+RUN /var/lang/bin/python3.8 -m pip install joblib
+RUN /var/lang/bin/python3.8 -m pip install scikit-learn
+RUN /var/lang/bin/python3.8 -m pip install awsiotsdk pandas
 
-# run selected files
-RUN mkdir /pyfiles
-COPY ./subscriber.py /pyfiles/subscriber.py
+WORKDIR /var/task/lambda-with-ML-container
 
-EXPOSE 80
+COPY inference.py {LAMBDA_TASK_ROOT}
+COPY main.py {LAMBDA_TASK_ROOT}
 
-CMD ["python3","-u", "/pyfiles/subscriber.py"]
+COPY . .
+
+RUN pip install -r requirements.txt
+
+CMD ["main.main"]

@@ -42,15 +42,19 @@ export class CdkIotContainerStack extends cdk.Stack {
     });
 
     // create container component - com.example.container
-    const version_container = "1.1.4"
+    const version_container = "1.0.1"
     new containerComponent(scope, "container-component", version_container)   
 
-    // create local component
+    // create consumer component
     const version_consumer = "1.0.0"
-    new localComponent(scope, "local-component", version_consumer, s3Bucket.bucketName)   
+    new consumerComponent(scope, "consumer-component", version_consumer, s3Bucket.bucketName)   
 
+    // create subscriber component
+    const version_subscriber = "1.0.0"
+    new subscriberComponent(scope, "subscriber-component", version_subscriber, s3Bucket.bucketName)   
+    
     // deploy components 
-    //new componentDeployment(scope, "deployments", version_consumer, version_container, accountId, deviceName)   
+    new componentDeployment(scope, "deployments", version_consumer, version_subscriber, version_container, accountId, deviceName)   
   }
 }
 
@@ -106,7 +110,7 @@ export class containerComponent extends cdk.Stack {
             "os": "all"
           },
           "Lifecycle": {
-            "Run":"docker run --rm -v /greengrass/v2:/greengrass/v2 -v /home/ubuntu/environment/subscriberdocker/logfiles:/tmp -e AWS_REGION -e SVCUID -e MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT} -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri}"
+            "Run":"docker run -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT -e AWS_CONTAINER_AUTHORIZATION_TOKEN -e SVCUID -e AWS_CONTAINER_CREDENTIALS_FULL_URI ${imageUri}"
           },
           "Artifacts": [
             {
@@ -139,7 +143,7 @@ export class containerComponent extends cdk.Stack {
       },
 */
 
-export class localComponent extends cdk.Stack {
+export class consumerComponent extends cdk.Stack {
   constructor(scope: Construct, id: string, version: string, bucketName: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
@@ -193,17 +197,71 @@ export class localComponent extends cdk.Stack {
   }
 }
 
+export class subscriberComponent extends cdk.Stack {
+  constructor(scope: Construct, id: string, version: string, bucketName: string, props?: cdk.StackProps) {    
+    super(scope, id, props);
+
+    // recipe of component - com.example.subscriber
+    const recipe_subscriber = `{
+      "RecipeFormatVersion": "2020-01-25",
+      "ComponentName": "com.example.subscriber",
+      "ComponentVersion": "${version}",
+      "ComponentDescription": "A component that subcribes the API.",
+      "ComponentPublisher": "Amazon",
+      "ComponentConfiguration": {
+        "DefaultConfiguration": {
+          "accessControl": {
+            "aws.greengrass.ipc.pubsub": {
+              "com.example.subscriber:pubsub:1": {
+                "policyDescription": "Allows access to subscriber to all topics.",
+                "operations": [
+                  "aws.greengrass#SubscribeToTopic"
+                ],
+                "resources": [
+                  "*"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Manifests": [{
+        "Platform": {
+          "os": "linux"
+        },
+        "Lifecycle": {
+          "Install": "pip3 install awsiotsdk",
+          "Run": "python3 -u {artifacts:path}/subscriber.py"
+        },
+        "Artifacts": [
+          {
+            "URI": "${'s3://'+bucketName}/subscriber/artifacts/com.example.subscriber/1.0.0/subscriber.py"
+          }
+        ]
+      }]
+    }`
+
+    // recipe of component - com.example.subscriber
+    new greengrassv2.CfnComponentVersion(this, 'MyCfnComponentVersion-Subscriber', {
+      inlineRecipe: recipe_subscriber,
+    });        
+  }
+}
+
 export class componentDeployment extends cdk.Stack {
-  constructor(scope: Construct, id: string, version_consumer: string, version_container: string, accountId: string, deviceName: string, props?: cdk.StackProps) {    
+  constructor(scope: Construct, id: string, version_consumer: string, version_subscriber: string, version_container: string, accountId: string, deviceName: string, props?: cdk.StackProps) {    
     super(scope, id, props);
 
     // deployments
     const cfnDeployment = new greengrassv2.CfnDeployment(this, 'MyCfnDeployment', {
       targetArn: `arn:aws:iot:ap-northeast-2:`+accountId+`:thing/`+deviceName,    
       components: {
-      /*  "com.example.consumer": {
+        "com.example.consumer": {
           componentVersion: version_consumer, 
-        }, */
+        }, 
+        "com.example.subscriber": {
+          componentVersion: version_subscriber, 
+        }, 
         "com.example.container": {
           componentVersion: version_container, 
         },  
