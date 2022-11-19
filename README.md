@@ -26,7 +26,7 @@ lifecycle에서 아래와 같은 Docker argument를 설정할 수 있습니다.
 
 ## CDK를 이용한 Container component의 배포
 
-[cdk-iot-container-stack.ts](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/cdk-iot-container/lib/cdk-iot-container-stack.ts)를 참조하여 아래와 같이 component를 선언하고 deployment를 구현합니다. 
+[CDK로 Container Component 배포하기 ](https://github.com/kyopark2014/iot-greengrass-with-container-component/tree/main/cdk-iot-container)를 참조하여 아래와 같이 component를 선언하고 deployment를 구현합니다. 
 
 
 ### Docker 이미지 준비 
