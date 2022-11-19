@@ -4,7 +4,8 @@ Docker를 사용하면 배포의 편의 뿐 아니라 동일한 환경에서 어
 
 아래와 같이 Docker Container Component 활용하는 시나리오에 대해 설명합니다. Docker Container Component는 Amazon ECR에 저장된 Docker 이미지를 다운로드하여 생성됩니다. 여기서는 Publisher 역할을 하는 Component가 Container Component로 IPC 통신방식으로 메시지를 Publish하면 Container 안에 있는 이미 학습된 모델을 이용하여 추론을 수행한다고 가정하였습니다. Publisher와 Subscriber Component가 사용하는 Receipe와 Artifact는 AWS CDK를 통해 필드되어 S3 또는 ECR에 저장되고, AWS IoT Device Management를 이용하여 Device에 배포 됩니다. 
 
-![image](https://user-images.githubusercontent.com/52392004/202844915-eb30b976-491d-4897-b2de-84d3d44f195a.png)
+<img src="https://user-images.githubusercontent.com/52392004/202844915-eb30b976-491d-4897-b2de-84d3d44f195a.png" width="600">
+
 
 
 ## Docker Container Preparation
