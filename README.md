@@ -4,7 +4,7 @@ Docker를 사용하면 배포의 편의 뿐 아니라 동일한 환경에서 어
 
 ## Docker Container Preparation
 
-[docker-container-preparation](https://github.com/kyopark2014/iot-greengrass/blob/main/docker-component.md#docker-container-preparation)에서는 Docker를 사용하기 위해 반드시 필요한 사용자의 퍼미션 설정방법을 설명하고 있습니다. 
+[Docker Container ](https://github.com/kyopark2014/iot-greengrass/blob/main/docker-component.md#docker-container-preparation)에서는 Docker를 사용하기 위해 반드시 필요한 사용자의 퍼미션 설정방법을 설명하고 있습니다. 
 
 ### Recipe
 
