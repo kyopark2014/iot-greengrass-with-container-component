@@ -54,7 +54,7 @@ Component의 recipe에는 아래와 같이 Docker run 명령어를 설정합니�
 
 ## Publisher/Subscriber
 
-여기서는 Publisher는 [(Wine Quality (Regression)](https://github.com/kyopark2014/ML-xgboost/tree/main/wine-quality)에서 학습한 머신러닝 모델을 활용하여 추론(Inference)을 Subscriber에게 요청하는 시나리오를 가정하고 있습니다.
+여기서는 Publisher는 [Wine Quality (Regression)](https://github.com/kyopark2014/ML-xgboost/tree/main/wine-quality)에서 학습한 머신러닝 모델을 활용하여 추론(Inference)을 Subscriber에게 요청하는 시나리오를 가정하고 있습니다.
 
 ### Publisher
 
