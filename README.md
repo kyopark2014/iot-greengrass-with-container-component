@@ -12,7 +12,7 @@ Docker를 사용하면 배포의 편의 뿐 아니라 동일한 환경에서 어
 
 [Docker Container 준비](https://github.com/kyopark2014/iot-greengrass/blob/main/docker-component.md#docker-container-preparation)에 따라, Greengrass에서 Docker container component를 사용하기 위하여 반드시 필요한 사용자 퍼미션을 설정합니다. 
 
-### Recipe의 Docker 실행 설정 
+## Recipe의 Docker 실행 설정 
 
 lifecycle에서 아래와 같은 Docker argument를 설정할 수 있습니다. 
 
