@@ -39,9 +39,9 @@ new cdk.CfnOutput(this, 'PublisherImageUri', {
 });
 ```
 
-### Docker 실행 
+### Docker Container Component 실행 
 
-Component의 recipe에는 아래와 같이 Docker run 명령어서를 설정합니다.  
+Component의 recipe에는 아래와 같이 Docker run 명령어를 설정합니다.  
 
 ```java
 "Run":"docker run --rm -v /greengrass/v2/ipc.socket:/greengrass/v2/ipc.socket 
