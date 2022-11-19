@@ -124,7 +124,7 @@ def handler(event, context):
 유용한 [Greengrass 명령어와 중요한 메모들](https://github.com/kyopark2014/iot-greengrass/blob/main/greengrass-commands.md)를 정리하였습니다.
 
 
-## 참조: Recipe에서 environment variable
+## 참조: Recipe에서 environment variable 사용
 
 "docker run"에서 "MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT}"와 같이 값을 입력후 아래처럼 사용합니다. 
 
