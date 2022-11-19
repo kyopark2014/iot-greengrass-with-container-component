@@ -35,7 +35,7 @@ ECR을 사용하기 위해서는 [device role](https://docs.aws.amazon.com/green
 
 ### Recipe
 
-lifecycle에서 아래와 같은 argument를 설정할 수 있습니다. 
+lifecycle에서 아래와 같은 Docker argument를 설정할 수 있습니다. 
 
 - --network=host: 컨테이너가 stream manager compnent에 연결할 수 있도록 [host network에 local TLS](https://docs.docker.com/engine/reference/run/#network-host)로 access합니다. 이것은 linux용 Docker에서만 사용할 수 있습니다. 
 - -v AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT: 컨테이너가 IPC Socket을 mount할 수 있도록 IPC socket file path를 환경변수로 제공합니다. 예) -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT
@@ -45,25 +45,50 @@ lifecycle에서 아래와 같은 argument를 설정할 수 있습니다.
 - -v: 컨테이너에서 component의 [work folder](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html#component-recipe-work-path)를 mount 합니다. 예) -v {work:path}:{work:path} 
 - --rm: 컨테이너를 정리(clean up)합니다. 예) --rm publish-to-iot-core
 
-### Use interprocess communication in Docker container components
+## CDK를 이용한 Container component의 배포
 
-[Use interprocess communication in Docker container components](https://docs.aws.amazon.com/greengrass/v2/developerguide/run-docker-container.html)
-
-To use IPC in a Docker container component, you must run the Docker container with the following parameters:
-
-Mount the IPC socket in the container. The Greengrass nucleus provides the IPC socket file path in the AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT environment variable.
-
-Set the SVCUID and AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT environment variables to the values that the Greengrass nucleus provides to components. Your component uses these environment variables to authenticate connections to the Greengrass nucleus.
+[cdk-iot-container-stack.ts](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/cdk-iot-container/lib/cdk-iot-container-stack.ts)를 참조하여 아래와 같이 component를 선언하고 deployment를 구현합니다. 
 
 
+### Docker 이미지 준비 
+
+아래와 같이 특정 폴더에 있는 [Dockerfile](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/Dockerfile)과 소스들로 Docker에 필요한 이미지를 빌드합니다. 이때 ECR을 이용하여 쉽게 배포할 수 있습니다. 
+
+```java
+const asset = new DockerImageAsset(this, 'BuildImage', {
+    directory: path.join(__dirname, '../../src/container-publisher'),
+})
+
+const imageUri = asset.imageUri
+new cdk.CfnOutput(this, 'PublisherImageUri', {
+  value: imageUri,
+  description: 'Publisher Image Uri',
+});
+```
+
+### Docker 실행 
+
+Component의 recipe에는 아래와 같이 Docker run 명령어서를 설정합니다.  
+
+```java
+"Run":"docker run --rm -v /greengrass/v2/ipc.socket:/greengrass/v2/ipc.socket 
+  -e AWS_CONTAINER_AUTHORIZATION_TOKEN=$AWS_CONTAINER_AUTHORIZATION_TOKEN 
+  -e SVCUID=$SVCUID 
+  -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT=/greengrass/v2/ipc.socket 
+  -e AWS_CONTAINER_CREDENTIALS_FULL_URI=$AWS_CONTAINER_CREDENTIALS_FULL_URI 
+  ${imageUri} --network=host"
+```
+
+## Publisher/Subscriber
 
 
-### Greengrass Commands와 Memo
+
+## Greengrass Commands와 Memo
 
 유용한 [Greengrass 명령어와 중요한 메모들](https://github.com/kyopark2014/iot-greengrass/blob/main/greengrass-commands.md)를 정리하였습니다.
 
 
-### Recipe에서 environment variable
+## 참조: Recipe에서 environment variable
 
 "docker run"에서 "MSG_COUNT_LIMIT={configuration:/MSG_COUNT_LIMIT}"와 같이 값을 입력후 아래처럼 사용합니다. 
 
