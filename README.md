@@ -25,7 +25,7 @@ lifecycle에서 아래와 같은 Docker argument를 설정할 수 있습니다.
 
 ### Docker 이미지 준비 
 
-아래와 같이 특정 폴더에 있는 [Dockerfile](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/Dockerfile)과 소스들로 Docker에 필요한 이미지를 빌드합니다. 이때 ECR을 이용하여 쉽게 배포할 수 있습니다. 
+아래와 같이 [Dockerfile](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/Dockerfile)과 소스들로 Docker가 필요한 이미지를 빌드합니다. 이때 ECR을 이용하여 쉽게 배포할 수 있습니다. 
 
 ```java
 const asset = new DockerImageAsset(this, 'BuildImage', {
