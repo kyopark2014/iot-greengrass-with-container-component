@@ -4,9 +4,9 @@ Docker를 사용하면 배포의 편의 뿐 아니라 동일한 환경에서 어
 
 ## Docker Container Preparation
 
-[Docker Container ](https://github.com/kyopark2014/iot-greengrass/blob/main/docker-component.md#docker-container-preparation)에서는 Docker를 사용하기 위해 반드시 필요한 사용자의 퍼미션 설정방법을 설명하고 있습니다. 
+[Docker Container 준비](https://github.com/kyopark2014/iot-greengrass/blob/main/docker-component.md#docker-container-preparation)에서는 Docker를 사용하기 위해 반드시 필요한 사용자의 퍼미션 설정방법을 설명하고 있습니다. 
 
-### Recipe
+### Recipe 
 
 lifecycle에서 아래와 같은 Docker argument를 설정할 수 있습니다. 
 
@@ -72,8 +72,38 @@ Publisher는 [samples.json](https://github.com/kyopark2014/ML-xgboost/blob/main/
 
 PUBSUB으로 수신된 데이터에 대해, [XGBoost 알고리즘](https://github.com/kyopark2014/ML-Algorithms/blob/main/xgboost.md)으로 [Wine Data](https://archive.ics.uci.edu/ml/datasets/wine+quality)를 학습하여 만든 [xgboost_wine_quality.json](https://github.com/kyopark2014/ML-xgboost/blob/main/wine-quality/src/xgboost_wine_quality.json) 모델을 이용하여, [추론(Inference)를 수행](https://github.com/kyopark2014/ML-xgboost/tree/main/wine-quality#inference)합니다. 
 
-[inference.py](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/inference.py)
+[subscriber.py](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/subscriber.py)와 같이, 추론에 필요한 데이터는 아래와 같이 Decoding한 후에 [inference.py](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/inference.py)의 handler()를 호출하여 추론을 수행합니다.  
 
+```java
+from inference import handler  
+
+def on_stream_event(event: SubscriptionResponseMessage) -> None:
+    message = str(event.binary_message.message, 'utf-8')
+    topic = event.binary_message.context.topic
+
+    # Inference
+    json_data = json.loads(message) # json decoding        
+    results = handler(json_data,"")  
+```
+
+[inference.py](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/inference.py)에서는 아래와 같이 JSON형태로 전달되는 event에서 body를 추출하여 predict()를 이용하여 추론을 수행합니다. 
+
+```java
+def handler(event, context):
+    body = event['body']
+    isBase64Encoded = event['isBase64Encoded']
+
+    if isBase64Encoded: 
+        body_bytes = base64.b64decode(body)
+        body_dec = body_bytes.decode('ascii')        
+
+        values = pd.read_json(body_dec)        
+    else:
+        values = pd.read_json(body)        
+        
+    # inference
+    results = model.predict(values)
+```
 
 
 ## Greengrass Commands와 Memo
