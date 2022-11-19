@@ -14,7 +14,7 @@ Docker를 사용하면 배포의 편의 뿐 아니라 동일한 환경에서 어
 
 ## Recipe의 Docker 실행 설정 
 
-lifecycle에서 아래와 같은 Docker argument를 설정할 수 있습니다. 
+Lifecycle에서 아래와 같은 Docker argument를 설정할 수 있습니다. 
 
 - --network=host: 컨테이너가 stream manager compnent에 연결할 수 있도록 [host network에 local TLS](https://docs.docker.com/engine/reference/run/#network-host)로 access합니다. 이것은 linux용 Docker에서만 사용할 수 있습니다. 
 - -v AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT: 컨테이너가 IPC Socket을 mount할 수 있도록 IPC socket file path를 환경변수로 제공합니다. 예) -v $AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT
