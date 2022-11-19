@@ -1,4 +1,4 @@
-# CDK를 이용해 Greengrass에서 Container Conmponent 배포하기 
+# CDK를 이용해 Greengrass에서 Container Component 배포하기 
 
 Docker를 사용하면 다양한 디바이스의 환경과 관계없이 동일한 환경에서 어플리케이션을 실행 및 배포할 수 있어서 편리합니다. 여기서는 Docker image를 이용해 [Greengrass](https://github.com/kyopark2014/iot-greengrass)에 Container Component를 등록하고, 다른 Component과 [IPC 방식](https://github.com/kyopark2014/iot-greengrass/blob/main/IPC.md)로 통신하는 방법에 대해 설명합니다. 
 
