@@ -81,6 +81,26 @@ Component의 recipe에는 아래와 같이 Docker run 명령어서를 설정합�
 
 ## Publisher/Subscriber
 
+여기서는 Publisher는 [(Wine Quality (Regression)](https://github.com/kyopark2014/ML-xgboost/tree/main/wine-quality)에서 학습한 머신러닝 모델을 활용하여 추론(Inference)을 Subscriber에게 요청하는 시나리오를 가정하고 있습니다.
+
+### Publisher
+
+Wine Quality를 측정하기 위해 필요한 데이터는 [samples.json](https://github.com/kyopark2014/ML-xgboost/blob/main/wine-quality/src/samples.json)에 있다고 가정합니다. 실제로는 센서등을 통해 수집된 데이터로 가정할 수 있습니다. 이때의 데이터 형태는 아래와 같습니다. 하나 또는 여러개의 Json 데이터입니다. 
+
+```java
+{"body": "[{\"fixed acidity\":6.6,\"volatile acidity\":0.24,\"citric acid\":0.28,\"residual sugar\":1.8,\"chlorides\":0.028,\"free sulfur dioxide\":39,\"total sulfur dioxide\":132,\"density\":0.99182,\"pH\":3.34,\"sulphates\":0.46,\"alcohol\":11.4,\"color_red\":0,\"color_white\":1},{\"fixed acidity\":8.7,\"volatile acidity\":0.78,\"citric acid\":0.51,\"residual sugar\":1.7,\"chlorides\":0.415,\"free sulfur dioxide\":12,\"total sulfur dioxide\":66,\"density\":0.99623,\"pH\":3.0,\"sulphates\":1.17,\"alcohol\":9.2,\"color_red\":1,\"color_white\":0}]", "isBase64Encoded": false}
+```
+
+Publisher는 [samples.json](https://github.com/kyopark2014/ML-xgboost/blob/main/wine-quality/src/samples.json)의 데이터를 일정시간마다 PUBSUB 형태로 
+[IPC 통신](https://github.com/kyopark2014/iot-greengrass/blob/main/IPC.md)를 통해 Subscriber로 전송합니다. 
+
+
+### Subscriber
+
+PUBSUB으로 수신된 데이터에 대해, [XGBoost 알고리즘](https://github.com/kyopark2014/ML-Algorithms/blob/main/xgboost.md)으로 [Wine Data](https://archive.ics.uci.edu/ml/datasets/wine+quality)를 학습하여 만든 [xgboost_wine_quality.json](https://github.com/kyopark2014/ML-xgboost/blob/main/wine-quality/src/xgboost_wine_quality.json) 모델을 이용하여, [추론(Inference)를 수행](https://github.com/kyopark2014/ML-xgboost/tree/main/wine-quality#inference)합니다. 
+
+[inference.py](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/inference.py)
+
 
 
 ## Greengrass Commands와 Memo
