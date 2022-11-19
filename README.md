@@ -8,9 +8,18 @@ Docker를 사용하면 다양한 디바이스의 환경과 관계없이 동일�
 
 
 
-## Docker Container Preparation
+## Preparation
+
+### Greengrass
+
+[Greengrass Preparation](https://github.com/kyopark2014/iot-greengrass/blob/main/greengrass-commands.md#greengrass-preparation)에 따라, Greengrass installer를 다운로드하고, Core 디바이스로 등록합니다.
+
+### Docker Container 
 
 [Docker Container 준비](https://github.com/kyopark2014/iot-greengrass/blob/main/docker-component.md#docker-container-preparation)에 따라, Greengrass에서 Docker container component를 사용하기 위하여 반드시 필요한 사용자 퍼미션을 설정합니다. 
+
+
+
 
 ## Recipe에서 Docker 실행 명령어 설정하기
 
@@ -23,6 +32,8 @@ Recipe의 Lifecycle에서는 아래와 같이 Docker argument를 설정할 수 �
 - -e AWS_CONTAINER_CREDENTIALS_FULL_URI: Necleus게 제공하는 환경변수로 AWS Credential을 얻어올때 필요합니다. 예) http://localhost:35607/2016-11-01/credentialprovider/
 - -v: 컨테이너에서 component의 [work folder](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html#component-recipe-work-path)를 mount 합니다. 예) -v {work:path}:{work:path} 
 - --rm: 컨테이너를 정리(clean up)합니다. 예) --rm publish-to-iot-core
+
+
 
 ## CDK를 이용한 Container component의 배포
 
