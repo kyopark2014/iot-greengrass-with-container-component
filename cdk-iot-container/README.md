@@ -201,7 +201,7 @@ export class localPublisherComponent extends cdk.Stack {
 }
 ```
 
-## Component들의 배포
+## Component 배포 설정
 
 아래와 같이 Publisher인 Component와 Subscriber인 Container component를 배포합니다. 
 
@@ -236,3 +236,18 @@ export class componentDeployment extends cdk.Stack {
   }
 }
 ```
+
+## 배포 및 삭제
+
+여기서는 여러개의 CDK Stack을 사용하였으므로 아래와 같이 배포합니다.
+
+```java
+cdk deploy --all
+```
+
+인프라를 더이상 사용하지 않는 경우에는 아래와 같이 삭제합니다. 
+
+```java
+cdk destroy --all
+```
+
