@@ -12,7 +12,7 @@ Docker를 사용하면 다양한 디바이스의 환경과 관계없이 동일�
 
 ### Greengrass
 
-[Greengrass Preparation](https://github.com/kyopark2014/iot-greengrass/blob/main/greengrass-commands.md#greengrass-preparation)에 따라, Greengrass installer를 다운로드하고, Core 디바이스로 등록합니다.
+[Greengrass 준비](https://github.com/kyopark2014/iot-greengrass/blob/main/greengrass-commands.md#greengrass-preparation)에 따라, Greengrass installer를 다운로드하고, Core 디바이스로 등록합니다.
 
 ### Docker Container 
 
