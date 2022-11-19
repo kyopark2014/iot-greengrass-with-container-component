@@ -86,6 +86,13 @@ def on_stream_event(event: SubscriptionResponseMessage) -> None:
     results = handler(json_data,"")  
 ```
 
+추론의 결과는 아래와 같이 로그로 확인합니다.
+
+```java
+2022-11-19T08:37:17.452Z [INFO] (Copier) com.container.subscriber: stdout. result: [6.573914 4.869721]. {scriptName=services.com.container.subscriber.lifecycle.Run, serviceName=com.container.subscriber, currentState=RUNNING}
+2022-11-19T08:37:17.452Z [INFO] (Copier) com.container.subscriber: stdout. DEBUG:__main__:result: [6.573914051055908, 4.869720935821533]. {scriptName=services.com.container.subscriber.lifecycle.Run, serviceName=com.container.subscriber, currentState=RUNNING}
+```
+
 [inference.py](https://github.com/kyopark2014/iot-greengrass-with-container-component/blob/main/src/container-subscriber/inference.py)에서는 아래와 같이 JSON형태로 전달되는 event에서 body를 추출하여 predict()를 이용하여 추론을 수행합니다. 
 
 ```java
