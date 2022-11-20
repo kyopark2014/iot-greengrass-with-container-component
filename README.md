@@ -77,7 +77,7 @@ Component의 recipe에는 아래와 같이 Docker run 명령어를 설정합니�
 
 ### Publisher
 
-Wine Quality를 측정하기 위해 필요한 데이터는 [samples.json](https://github.com/kyopark2014/ML-xgboost/blob/main/wine-quality/src/samples.json)에 있다고 가정합니다. 실제로는 센서등을 통해 수집된 데이터로 가정할 수 있습니다. 이때의 데이터 형태는 아래와 같습니다. 하나 또는 여러개의 Json 데이터입니다. 
+Wine Quality를 측정하기 위하여, [samples.json](https://github.com/kyopark2014/ML-xgboost/blob/main/wine-quality/src/samples.json)을 로드하여 publish 합니다. 실제로는 센서등을 통해 수집된 데이터로 가정할 수 있습니다. 데이터 형태는 아래와 같으며, 하나 또는 여러개의 Json 데이터입니다. 
 
 ```java
 {"body": "[{\"fixed acidity\":6.6,\"volatile acidity\":0.24,\"citric acid\":0.28,\"residual sugar\":1.8,\"chlorides\":0.028,\"free sulfur dioxide\":39,\"total sulfur dioxide\":132,\"density\":0.99182,\"pH\":3.34,\"sulphates\":0.46,\"alcohol\":11.4,\"color_red\":0,\"color_white\":1},{\"fixed acidity\":8.7,\"volatile acidity\":0.78,\"citric acid\":0.51,\"residual sugar\":1.7,\"chlorides\":0.415,\"free sulfur dioxide\":12,\"total sulfur dioxide\":66,\"density\":0.99623,\"pH\":3.0,\"sulphates\":1.17,\"alcohol\":9.2,\"color_red\":1,\"color_white\":0}]", "isBase64Encoded": false}
