@@ -37,7 +37,7 @@ Recipe의 Lifecycle에서는 아래와 같이 Docker argument를 설정할 수 �
 
 
 
-## CDK를 이용한 Container component의 배포
+## CDK를 이용한 Container Component의 배포
 
 [CDK로 Container Component 배포하기 ](https://github.com/kyopark2014/iot-greengrass-with-container-component/tree/main/cdk-iot-container)를 참조하여 아래와 같이 component를 선언하고 deployment를 구현합니다. 
 
