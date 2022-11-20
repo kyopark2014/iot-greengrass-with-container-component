@@ -2,7 +2,7 @@
 
 Docker를 사용하면 다양한 디바이스의 환경과 관계없이 동일한 환경에서 어플리케이션을 실행 및 배포할 수 있어서 편리합니다. 여기서는 Docker image를 이용해 [Greengrass](https://github.com/kyopark2014/iot-greengrass)에 Container Component를 등록하고, 다른 Component과 [IPC 방식](https://github.com/kyopark2014/iot-greengrass/blob/main/IPC.md)으로 통신하는 방법에 대해 설명합니다. 
 
-아래와 같이 Docker Container Component 활용하는 시나리오에 대해 설명합니다. Docker Container Component는 Amazon ECR에 저장된 Docker 이미지를 다운로드하여 생성됩니다. 여기서는 Publisher 역할을 하는 Component가 Container Component로 메시지를 Publish하면 Container 안에 있는 이미 학습된 모델을 이용하여 추론을 수행하였습니다. Publisher와 Subscriber Component가 사용하는 Recipe와 Artifact는 AWS CDK를 통해 S3 또는 ECR에 저장되고, AWS IoT Device Management를 이용하여 Device에 배포 됩니다. 
+아래에서는 Amazon ECR에 이미지를 저장한후 Docker Container Component를 생성하는 것을 보여줍니다. Publisher 역할을 하는 Component가 Container Component로 메시지를 Publish하면 Container 안에 있는 이미 학습된 모델을 이용하여 추론을 수행하였습니다. Publisher와 Subscriber Component가 사용하는 Recipe와 Artifact는 AWS CDK를 통해 S3 또는 ECR에 저장되고, AWS IoT Device Management를 이용하여 Device에 배포 됩니다. 
 
 <img src="https://user-images.githubusercontent.com/52392004/202844915-eb30b976-491d-4897-b2de-84d3d44f195a.png" width="600">
 
