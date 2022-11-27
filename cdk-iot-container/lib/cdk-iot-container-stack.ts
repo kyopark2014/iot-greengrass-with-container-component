@@ -12,10 +12,44 @@ export class CdkIotContainerStack extends cdk.Stack {
 
     const deviceName = 'GreengrassCore-18163f7ac3e'
     const accountId = cdk.Stack.of(this).account
+    const bucketName = "gg-depolyment-storage"
+
+    // s3 deployment
+    const s3deploy = new s3Deployment(scope, "s3-deployment", bucketName)     
+
+    // component publisher
+    const version_component_publisher = "1.0.0"
+    const component_publisher = new localPublisherComponent(scope, "component-publisher", version_component_publisher, bucketName)   
+    component_publisher.addDependency(s3deploy);
+
+    // component subscriber 
+    const version_component_subscriber = "1.0.0"
+    const component_subscriber = new localSubscriberComponent(scope, "component-subscriber", version_component_subscriber, bucketName)   
+    component_subscriber.addDependency(component_publisher);
+
+    // container publisher
+    const version_container_publisher = "1.0.0"
+    const container_publisher = new containerPublisherComponent(scope, "container-publisher", version_container_publisher)   
+    container_publisher.addDependency(component_subscriber);  
+
+    // container subscriber
+    const version_container_subscriber = "1.0.0"
+    const container_subscriber = new containerSubscriberComponent(scope, "container-subscriber", version_container_subscriber)   
+    container_subscriber.addDependency(container_publisher);
+    
+    // deploy components 
+    const deployment = new componentDeployment(scope, "deployments", version_component_publisher, version_component_subscriber, version_container_publisher, version_container_subscriber, accountId, deviceName)   
+    deployment.addDependency(container_subscriber);
+  }
+}
+
+export class s3Deployment extends cdk.Stack {
+  constructor(scope: Construct, id: string, bucketName: string, props?: cdk.StackProps) {    
+    super(scope, id, props);
 
     // S3 for artifact storage
     const s3Bucket = new s3.Bucket(this, "gg-depolyment-storage",{
-      bucketName: "gg-depolyment-storage",
+      bucketName: bucketName,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
@@ -33,32 +67,13 @@ export class CdkIotContainerStack extends cdk.Stack {
     new cdk.CfnOutput(this, 's3Path', {
       value: 's3://'+s3Bucket.bucketName,
       description: 'The path of s3',
-    });
+    });    
 
     // copy web application files into s3 bucket
     new s3Deploy.BucketDeployment(this, "UploadArtifact", {
       sources: [s3Deploy.Source.asset("../src")],
       destinationBucket: s3Bucket,
     });
-
-    // container subscriber
-    const version_container_subscriber = "1.0.0"
-    new containerSubscriberComponent(scope, "container-subscriber", version_container_subscriber)   
-
-    // container publisher
-    const version_container_publisher = "1.0.0"
-    new containerPublisherComponent(scope, "container-publisher", version_container_publisher)   
-
-    // component publisher
-    const version_component_publisher = "1.0.0"
-    new localPublisherComponent(scope, "component-publisher", version_component_publisher, s3Bucket.bucketName)   
-
-    // component subscriber 
-    const version_component_subscriber = "1.0.0"
-    new localSubscriberComponent(scope, "component-subscriber", version_component_subscriber, s3Bucket.bucketName)   
-    
-    // deploy components 
-    new componentDeployment(scope, "deployments", version_component_publisher, version_component_subscriber, version_container_publisher, version_container_subscriber, accountId, deviceName)   
   }
 }
 
@@ -327,7 +342,7 @@ export class componentDeployment extends cdk.Stack {
           componentVersion: version_container_subscriber, 
         },  
         "aws.greengrass.Cli": {
-          componentVersion: "2.9.0", 
+          componentVersion: "2.9.1", 
         },
       },
       deploymentName: 'component-deployment',
